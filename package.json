@@ -1,0 +1,28 @@
+{
+	"name": "boat-listr",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "next lint"
+	},
+	"dependencies": {
+		"@aws-sdk/client-s3": "3.796.0",
+		"@aws-sdk/s3-request-presigner": "3.796.0",
+		"@prisma/client": "6.6.0",
+		"next": "15.3.1",
+		"react": "18.3.1",
+		"react-dom": "18.3.1"
+	},
+	"devDependencies": {
+		"@types/node": "20.17.57",
+		"@types/react": "18.3.12",
+		"@types/react-dom": "18.3.1",
+		"eslint": "9.20.1",
+		"eslint-config-next": "15.3.1",
+		"prisma": "6.6.0",
+		"typescript": "5.8.3"
+	}
+}

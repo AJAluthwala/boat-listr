@@ -1,0 +1,577 @@
+{
+  "info": {
+    "name": "BoatListr Complete APIs",
+    "_postman_id": "d8e4b45f-4c95-4a3e-8ac4-6eec7ee53cc0",
+    "description": "Complete API collection for BoatListr backend routes.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test Seller\",\n  \"email\": \"seller@example.com\",\n  \"password\": \"StrongPass123!\",\n  \"address\": \"Harbor Street\",\n  \"contactNumber\": \"1234567890\"\n}" },
+            "url": "{{baseUrl}}/api/auth/register"
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"seller@example.com\",\n  \"password\": \"StrongPass123!\"\n}" },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/auth/refresh-token"
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"seller@example.com\"\n}" },
+            "url": "{{baseUrl}}/api/auth/forgot-password"
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{resetToken}}\",\n  \"password\": \"NewStrongPass123!\"\n}" },
+            "url": "{{baseUrl}}/api/auth/reset-password"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/users/me"
+          }
+        },
+        {
+          "name": "Update Me",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Updated Seller\",\n  \"address\": \"New Marina Address\",\n  \"contactNumber\": \"9876543210\"\n}" },
+            "url": "{{baseUrl}}/api/users/me"
+          }
+        },
+        {
+          "name": "Get User By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/users/{{userId}}"
+          }
+        },
+        {
+          "name": "Update User By ID",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Admin Updated User\",\n  \"address\": \"Dock 9\",\n  \"contactNumber\": \"1112223333\",\n  \"role\": \"ADMIN\"\n}" },
+            "url": "{{baseUrl}}/api/users/{{userId}}"
+          }
+        },
+        {
+          "name": "Delete User By ID",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/users/{{userId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Listings",
+      "item": [
+        {
+          "name": "Get Listings",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/listings?page=1&pageSize=20"
+          }
+        },
+        {
+          "name": "Create Listing",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"2020 Yacht\",\n  \"category\": \"Yacht\",\n  \"manufacturedYear\": 2020,\n  \"lengthFt\": 45,\n  \"shortDescription\": \"Luxury used yacht\",\n  \"mainDescription\": \"Excellent condition and serviced regularly\",\n  \"location\": \"Miami\",\n  \"valueUSD\": 250000,\n  \"status\": \"PENDING\",\n  \"engine\": \"Twin Diesel\",\n  \"totalPowerHP\": 1200,\n  \"brand\": \"Sunseeker\",\n  \"capacity\": 12\n}" },
+            "url": "{{baseUrl}}/api/listings"
+          }
+        },
+        {
+          "name": "Get Featured Listings",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/listings/featured"
+          }
+        },
+        {
+          "name": "Get Latest Listings",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/listings/latest"
+          }
+        },
+        {
+          "name": "Search Listings",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/listings/search?q=yacht"
+          }
+        },
+        {
+          "name": "Get Listing By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/listings/{{listingId}}"
+          }
+        },
+        {
+          "name": "Update Listing",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"2020 Yacht - Updated\",\n  \"valueUSD\": 245000,\n  \"location\": \"Fort Lauderdale\"\n}" },
+            "url": "{{baseUrl}}/api/listings/{{listingId}}"
+          }
+        },
+        {
+          "name": "Delete Listing",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/listings/{{listingId}}"
+          }
+        },
+        {
+          "name": "Update Listing Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"ACTIVE\"\n}" },
+            "url": "{{baseUrl}}/api/listings/{{listingId}}/status"
+          }
+        },
+        {
+          "name": "Get Listing Media",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/listings/{{listingId}}/media"
+          }
+        },
+        {
+          "name": "Add Listing Media",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"url\": \"https://example.com/image.jpg\",\n  \"type\": \"image\",\n  \"isPrimary\": true\n}" },
+            "url": "{{baseUrl}}/api/listings/{{listingId}}/media"
+          }
+        },
+        {
+          "name": "Delete Listing Media",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"mediaId\": {{mediaId}}\n}" },
+            "url": "{{baseUrl}}/api/listings/{{listingId}}/media"
+          }
+        },
+        {
+          "name": "Favorite Listing",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/listings/{{listingId}}/favorite"
+          }
+        },
+        {
+          "name": "Unfavorite Listing",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/listings/{{listingId}}/favorite"
+          }
+        },
+        {
+          "name": "Get Listing Conversations",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/listings/{{listingId}}/conversations"
+          }
+        },
+        {
+          "name": "Create Listing Conversation",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/listings/{{listingId}}/conversations"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Favorites",
+      "item": [
+        {
+          "name": "Get Favorites",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/favorites"
+          }
+        },
+        {
+          "name": "Add Favorite",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"listingId\": {{listingId}}\n}" },
+            "url": "{{baseUrl}}/api/favorites"
+          }
+        },
+        {
+          "name": "Remove Favorite",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"listingId\": {{listingId}}\n}" },
+            "url": "{{baseUrl}}/api/favorites"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Conversations",
+      "item": [
+        {
+          "name": "Get Conversations",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/conversations"
+          }
+        },
+        {
+          "name": "Create Conversation",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"listingId\": {{listingId}}\n}" },
+            "url": "{{baseUrl}}/api/conversations"
+          }
+        },
+        {
+          "name": "Get Conversation By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/conversations/{{conversationId}}"
+          }
+        },
+        {
+          "name": "Delete Conversation",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/conversations/{{conversationId}}"
+          }
+        },
+        {
+          "name": "Get Conversation Messages",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/conversations/{{conversationId}}/messages"
+          }
+        },
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"body\": \"Hello, is this listing still available?\"\n}" },
+            "url": "{{baseUrl}}/api/conversations/{{conversationId}}/messages"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/notifications"
+          }
+        },
+        {
+          "name": "Create Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"type\": \"SYSTEM\",\n  \"title\": \"Welcome\",\n  \"body\": \"Your account is ready\"\n}" },
+            "url": "{{baseUrl}}/api/notifications"
+          }
+        },
+        {
+          "name": "Mark Notifications Read",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"notificationId\": {{notificationId}}\n}" },
+            "url": "{{baseUrl}}/api/notifications/mark-read"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Create Payment Intent",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"amountUSD\": 99.99,\n  \"description\": \"Listing promotion\",\n  \"metadata\": {\n    \"listingId\": \"{{listingId}}\"\n  }\n}" },
+            "url": "{{baseUrl}}/api/payments/create-payment-intent"
+          }
+        },
+        {
+          "name": "Get Payment History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/payments/history"
+          }
+        },
+        {
+          "name": "Payments Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-webhook-signature", "value": "{{webhookSignature}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"type\": \"payment_intent.succeeded\",\n  \"data\": {\n    \"object\": {\n      \"id\": \"pi_test_001\",\n      \"amount\": 9999,\n      \"currency\": \"usd\",\n      \"payment_intent\": \"pi_test_001\",\n      \"status\": \"succeeded\",\n      \"description\": \"Test payment\",\n      \"metadata\": {\n        \"userId\": \"{{userId}}\"\n      }\n    }\n  }\n}" },
+            "url": "{{baseUrl}}/api/payments/webhook"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Subscriptions",
+      "item": [
+        {
+          "name": "Create Or Upsert Subscription",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"stripeSubId\": \"sub_test_001\",\n  \"stripePriceId\": \"price_test_001\",\n  \"status\": \"ACTIVE\",\n  \"currentPeriodStart\": \"2026-04-01T00:00:00.000Z\",\n  \"currentPeriodEnd\": \"2026-05-01T00:00:00.000Z\",\n  \"cancelAtPeriodEnd\": false\n}" },
+            "url": "{{baseUrl}}/api/subscriptions/create"
+          }
+        },
+        {
+          "name": "Cancel Subscription",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"stripeSubId\": \"sub_test_001\"\n}" },
+            "url": "{{baseUrl}}/api/subscriptions/cancel"
+          }
+        },
+        {
+          "name": "Subscription Portal",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/subscriptions/portal"
+          }
+        },
+        {
+          "name": "Subscriptions Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-webhook-signature", "value": "{{webhookSignature}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"data\": {\n    \"object\": {\n      \"id\": \"sub_test_001\",\n      \"status\": \"active\",\n      \"current_period_start\": 1711929600,\n      \"current_period_end\": 1714608000,\n      \"cancel_at_period_end\": false,\n      \"items\": {\n        \"data\": [\n          {\n            \"price\": {\n              \"id\": \"price_test_001\"\n            }\n          }\n        ]\n      },\n      \"metadata\": {\n        \"userId\": \"{{userId}}\"\n      }\n    }\n  }\n}" },
+            "url": "{{baseUrl}}/api/subscriptions/webhook"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Upload",
+      "item": [
+        {
+          "name": "Upload Image",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"fileName\": \"boat-image.jpg\",\n  \"contentType\": \"image/jpeg\",\n  \"fileSizeBytes\": 245760,\n  \"listingId\": {{listingId}}\n}" },
+            "url": "{{baseUrl}}/api/upload/image"
+          }
+        },
+        {
+          "name": "Upload Video",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"fileName\": \"walkthrough.mp4\",\n  \"contentType\": \"video/mp4\",\n  \"fileSizeBytes\": 5242880,\n  \"listingId\": {{listingId}}\n}" },
+            "url": "{{baseUrl}}/api/upload/video"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Admin Analytics",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/admin/analytics"
+          }
+        },
+        {
+          "name": "Admin Reports",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/admin/reports"
+          }
+        },
+        {
+          "name": "Admin Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/admin/users?page=1&pageSize=20"
+          }
+        },
+        {
+          "name": "Admin Update User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"userId\": {{userId}},\n  \"role\": \"ADMIN\"\n}" },
+            "url": "{{baseUrl}}/api/admin/users"
+          }
+        },
+        {
+          "name": "Admin Listings",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/admin/listings?page=1&pageSize=20"
+          }
+        },
+        {
+          "name": "Admin Update Listing Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"listingId\": {{listingId}},\n  \"status\": \"ACTIVE\"\n}" },
+            "url": "{{baseUrl}}/api/admin/listings"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,250 @@
+generator client {
+	provider = "prisma-client-js"
+}
+
+datasource db {
+	provider = "mysql"
+	url      = env("DATABASE_URL")
+}
+
+// ====================
+// ENUMS
+// ====================
+enum ListingStatus {
+	ACTIVE
+	SOLD
+	EXPIRED
+	PENDING
+	REJECTED
+	ARCHIVED
+}
+
+enum SubscriptionStatus {
+	ACTIVE
+	PAST_DUE
+	CANCELED
+	INCOMPLETE
+	INCOMPLETE_EXPIRED
+	TRIALING
+	UNPAID
+}
+
+enum MediaKind {
+	IMAGE
+	VIDEO
+}
+
+// ====================
+// MODELS
+// ====================
+model User {
+	id               Int       @id @default(autoincrement())
+	name             String
+	email            String    @unique
+	passwordHash     String
+	address          String?
+	contactNumber    String?
+	role             String    @default("SELLER")
+	stripeCustomerId String?   @unique
+	createdAt        DateTime  @default(now())
+	updatedAt        DateTime  @updatedAt
+
+	// Relations
+	listings         Listing[]
+	subscriptions    Subscription[]
+	payments         Payment[]
+	notifications    Notification[]
+	refreshTokens    RefreshToken[]
+
+	// Reverse relations
+	favorites        Favorite[]
+	conversations    ConversationParticipant[]
+	sentMessages     Message[]  @relation("MessageSender")
+
+	@@index([createdAt])
+}
+
+model Listing {
+	id               Int                  @id @default(autoincrement())
+	title            String
+	category         String
+	manufacturedYear Int
+	lengthFt         Int
+	shortDescription String
+	mainDescription  String?              @db.Text
+	location         String
+	valueUSD         Float
+	status           ListingStatus        @default(PENDING)
+	freeEndsAt       DateTime?
+	paidEndsAt       DateTime?
+
+	// New boat features
+	engine           String?
+	totalPowerHP     Int?
+	brand            String?
+	capacity         Int?
+
+	createdAt        DateTime             @default(now())
+	updatedAt        DateTime             @updatedAt
+
+	user             User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+	userId           Int
+
+	statusHistory    ListingStatusHistory[]
+	media            Media[]
+	favorites        Favorite[]
+	conversations    Conversation[]
+
+	@@index([userId, status])
+	@@index([status, createdAt])
+	@@index([category, status])
+	@@index([location, status])
+	@@index([valueUSD])
+	@@index([manufacturedYear])
+	@@index([freeEndsAt])
+	@@index([paidEndsAt])
+}
+
+model Media {
+	id           Int       @id @default(autoincrement())
+	listing      Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+	listingId    Int
+
+	// Public URL or CDN URL.
+	url          String
+
+	// S3 object key for secure lifecycle operations (delete, move, moderation).
+	s3Key        String?   @unique
+	bucket       String?
+	mimeType     String?
+	sizeBytes    Int?
+
+	// Compatibility with existing structure: keep "type" string.
+	type         String
+	kind         MediaKind @default(IMAGE)
+
+	isPrimary    Boolean   @default(false)
+	sortOrder    Int       @default(0)
+	createdAt    DateTime  @default(now())
+
+	@@index([listingId, createdAt])
+	@@index([listingId, type])
+	@@index([listingId, kind, sortOrder])
+}
+
+model ListingStatusHistory {
+	id         Int           @id @default(autoincrement())
+	listing    Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+	listingId  Int
+	from       ListingStatus
+	to         ListingStatus
+	changedAt  DateTime      @default(now())
+
+	@@index([listingId, changedAt])
+}
+
+model Subscription {
+	id                 Int                @id @default(autoincrement())
+	user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+	userId             Int
+	stripeSubId        String             @unique
+	stripePriceId      String?
+	status             SubscriptionStatus
+	currentPeriodStart DateTime?
+	currentPeriodEnd   DateTime?
+	cancelAtPeriodEnd  Boolean            @default(false)
+	createdAt          DateTime           @default(now())
+	updatedAt          DateTime           @updatedAt
+
+	@@index([userId, status])
+}
+
+model Payment {
+	id              Int       @id @default(autoincrement())
+	user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+	userId          Int
+	amountUSD       Float
+	currency        String    @default("usd")
+	stripePaymentId String    @unique
+	paymentIntentId String?
+	status          String
+	description     String?
+	metadata        Json?
+	createdAt       DateTime  @default(now())
+	updatedAt       DateTime  @updatedAt
+
+	@@index([userId, createdAt])
+	@@index([status, createdAt])
+}
+
+model Notification {
+	id         Int      @id @default(autoincrement())
+	user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+	userId     Int
+	type       String
+	title      String
+	body       String
+	read       Boolean  @default(false)
+	createdAt  DateTime @default(now())
+
+	@@index([userId, read, createdAt])
+}
+
+model RefreshToken {
+	id         Int      @id @default(autoincrement())
+	token      String   @unique
+	user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+	userId     Int
+	revoked    Boolean  @default(false)
+	expiresAt  DateTime
+	createdAt  DateTime @default(now())
+
+	@@index([userId, revoked, expiresAt])
+}
+
+model Favorite {
+	user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+	userId     Int
+	listing    Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+	listingId  Int
+	createdAt  DateTime @default(now())
+
+	@@id([userId, listingId])
+	@@index([listingId, createdAt])
+}
+
+model Conversation {
+	id           Int                        @id @default(autoincrement())
+	listing      Listing                    @relation(fields: [listingId], references: [id], onDelete: Cascade)
+	listingId    Int
+	participants ConversationParticipant[]
+	messages     Message[]
+	createdAt    DateTime                   @default(now())
+	updatedAt    DateTime                   @updatedAt
+
+	@@index([listingId, updatedAt])
+}
+
+model ConversationParticipant {
+	id             Int          @id @default(autoincrement())
+	conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+	conversationId Int
+	user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+	userId         Int
+
+	@@unique([conversationId, userId])
+	@@index([userId, conversationId])
+}
+
+model Message {
+	id             Int          @id @default(autoincrement())
+	conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+	conversationId Int
+	sender         User         @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+	senderId       Int
+	body           String       @db.Text
+	createdAt      DateTime     @default(now())
+
+	@@index([conversationId, createdAt])
+	@@index([senderId, createdAt])
+}
