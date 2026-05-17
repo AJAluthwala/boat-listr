@@ -3,11 +3,28 @@ import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import Card from "@/components/ui/card";
 import SiteHero from "@/components/site/site-hero";
+import FeaturedListings from "@/components/site/featured-listings";
+import PricingCards from "@/components/site/pricing-cards";
 
 export default function HomePage() {
 	return (
 		<main>
 			<SiteHero />
+
+			<section
+				className="bl-container"
+				style={{ paddingTop: "3rem", paddingBottom: "1rem" }}
+			>
+				<FeaturedListings />
+			</section>
+
+			<section
+				className="bl-container"
+				style={{ paddingTop: "2.5rem", paddingBottom: "3rem" }}
+			>
+				<PricingCards />
+			</section>
+
 			<section className="bl-section">
 				<div className="bl-container bl-section-grid">
 					<Card>

@@ -1,30 +1,47 @@
-import { hashPassword, isPrefixedToken } from "@/lib/auth";
+import { hashPassword, normalizeEmail } from "@/lib/auth";
 import { json, readJson } from "@/lib/api";
+import { hashOtpToken } from "@/lib/otp";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
-  try {
-    const body = await readJson<{ token?: string; password?: string }>(request);
-    const token = body.token ?? "";
-    const password = body.password ?? "";
+	try {
+		const body = await readJson<{ email?: string; otp?: string; password?: string }>(request);
+		const email = normalizeEmail(body.email);
+		const otp = (body.otp ?? "").trim();
+		const password = body.password ?? "";
 
-    if (!token || !isPrefixedToken(token, "reset") || password.length < 8) {
-      return json({ error: "Valid reset token and password (8+ chars) are required" }, 400);
-    }
+		if (!email) return json({ error: "Email is required" }, 400);
+		if (!/^\d{5}$/.test(otp)) return json({ error: "Enter the 5-digit code" }, 400);
+		if (password.length < 8) {
+			return json({ error: "Password must be at least 8 characters" }, 400);
+		}
 
-    const resetToken = await prisma.refreshToken.findUnique({ where: { token }, include: { user: true } });
-    if (!resetToken || resetToken.revoked || resetToken.expiresAt <= new Date()) {
-      return json({ error: "Invalid or expired reset token" }, 400);
-    }
+		const user = await prisma.user.findUnique({ where: { email } });
+		if (!user) return json({ error: "Invalid code or expired" }, 400);
 
-    await prisma.user.update({
-      where: { id: resetToken.userId },
-      data: { passwordHash: hashPassword(password) },
-    });
+		const expectedToken = hashOtpToken(user.id, email, otp);
+		const record = await prisma.refreshToken.findUnique({ where: { token: expectedToken } });
 
-    await prisma.refreshToken.update({ where: { token }, data: { revoked: true } });
-    return json({ message: "Password updated" });
-  } catch (error) {
-    return json({ error: error instanceof Error ? error.message : "Reset failed" }, 400);
-  }
+		if (!record || record.userId !== user.id || record.revoked || record.expiresAt <= new Date()) {
+			return json({ error: "Invalid code or expired" }, 400);
+		}
+
+		await prisma.$transaction([
+			prisma.user.update({
+				where: { id: user.id },
+				data: { passwordHash: hashPassword(password) },
+			}),
+			prisma.refreshToken.update({
+				where: { token: expectedToken },
+				data: { revoked: true },
+			}),
+		]);
+
+		return json({ message: "Password updated. You can now sign in." });
+	} catch (error) {
+		return json(
+			{ error: error instanceof Error ? error.message : "Reset failed" },
+			400,
+		);
+	}
 }

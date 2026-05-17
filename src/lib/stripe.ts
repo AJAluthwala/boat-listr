@@ -1,4 +1,30 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
+import Stripe from "stripe";
+
+let stripeClient: Stripe | null = null;
+
+export function getStripe(): Stripe {
+	if (stripeClient) return stripeClient;
+	const key = process.env.STRIPE_SECRET_KEY;
+	if (!key) {
+		throw new Error("STRIPE_SECRET_KEY is not set");
+	}
+	stripeClient = new Stripe(key);
+	return stripeClient;
+}
+
+export function getAppUrl(): string {
+	return process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+}
+
+export type StripeSubscriptionStatus = Stripe.Subscription.Status;
+
+// ============================================
+// Legacy stub helpers — kept so existing
+// /api/payments/* routes don't break. These
+// remain placeholders until those routes are
+// migrated to real Stripe.
+// ============================================
 
 export async function createPaymentIntent(amountUSD: number, metadata: Record<string, string> = {}) {
 	return {
