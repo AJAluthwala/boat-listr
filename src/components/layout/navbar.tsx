@@ -4,12 +4,12 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthModal } from "@/components/auth/auth-modal-context";
 import { useAuth } from "@/components/auth/auth-context";
+import { useFavorites } from "@/components/listings/favorites-context";
 
 const navLinks: { href: string; label: string; hasDropdown?: boolean }[] = [
   { href: "/", label: "Home" },
-  { href: "/listings", label: "Browse Boats", hasDropdown: true },
-  { href: "/dashboard", label: "Selling" },
-  { href: "/favorites", label: "Saved" }
+  { href: "/listings", label: "Browse Boats", hasDropdown: false },
+  { href: "/dashboard", label: "Selling" }
 ];
 
 const ChevronDownIcon = () => (
@@ -45,19 +45,19 @@ const SearchIcon = () => (
   </svg>
 );
 
-const MessageIcon = () => (
+const HeartIcon = ({ filled }: { filled?: boolean }) => (
   <svg
     width="20"
     height="20"
     viewBox="0 0 24 24"
-    fill="none"
+    fill={filled ? "currentColor" : "none"}
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
     aria-hidden="true"
   >
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
   </svg>
 );
 
@@ -72,6 +72,10 @@ export default function Navbar() {
   const router = useRouter();
   const { open: openAuthModal } = useAuthModal();
   const { isAuthenticated, logout } = useAuth();
+  const { favorites } = useFavorites();
+
+  const favoritesCount = favorites.length;
+  const savedActive = isActivePath(pathname, "/favorites");
 
   const handleSellClick = () => {
     if (isAuthenticated) {
@@ -86,11 +90,15 @@ export default function Navbar() {
     router.refresh();
   };
 
+  const handleSearchClick = () => {
+    router.push("/listings");
+  };
+
   return (
     <header className="bl-navbar-wrap">
       <div className="bl-container">
         <div className="bl-navbar">
-          {/* Brand / Logo — replace placeholder with provided logo asset */}
+          {/* Brand / Logo */}
           <Link href="/" className="bl-navbar-brand" aria-label="Boat Listr home">
             <span className="bl-navbar-brand-text">
               Boat<span className="bl-navbar-brand-accent">L</span>istr
@@ -119,19 +127,31 @@ export default function Navbar() {
           <div className="bl-navbar-actions">
             <button
               type="button"
+              onClick={handleSearchClick}
               className="bl-navbar-icon-btn"
               aria-label="Search listings"
+              title="Search listings"
             >
               <SearchIcon />
             </button>
 
             <Link
-              href="/messages"
+              href="/favorites"
               className="bl-navbar-icon-btn bl-navbar-icon-btn-badged"
-              aria-label="Messages"
+              aria-label="Saved listings"
+              title="Saved listings"
+              style={{
+                color: savedActive ? "#ff4d4d" : undefined,
+                borderColor: savedActive ? "#ffcccc" : undefined,
+                background: savedActive ? "#fff1f1" : undefined
+              }}
             >
-              <MessageIcon />
-              <span className="bl-navbar-badge" aria-hidden="true">0</span>
+              <HeartIcon filled={savedActive} />
+              {favoritesCount > 0 && (
+                <span className="bl-navbar-badge" aria-hidden="true">
+                  {favoritesCount > 99 ? "99+" : favoritesCount}
+                </span>
+              )}
             </Link>
 
             {isAuthenticated ? (

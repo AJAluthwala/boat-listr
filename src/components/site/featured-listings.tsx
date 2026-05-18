@@ -58,7 +58,10 @@ export default function FeaturedListings() {
     <section
       style={{
         display: "grid",
-        gap: "1.25rem"
+        gap: "2.5rem",
+        width: "100%",
+        maxWidth: 1420,
+        marginInline: "auto"
       }}
     >
       <style>{SHIMMER_KEYFRAMES}</style>
@@ -113,24 +116,34 @@ export default function FeaturedListings() {
 
         <Link
           href="/listings"
+          className="bl-featured-browse-all"
           style={{
             display: "inline-flex",
             alignItems: "center",
-            gap: 6,
-            padding: "0.6rem 1.1rem",
-            background: "#f6fafd",
-            color: "#0a3d62",
-            border: "1px solid #e1eef5",
-            borderRadius: 12,
-            fontWeight: 600,
+            gap: 8,
+            padding: "0.7rem 1.4rem",
+            background: "#0a3d62",
+            color: "#ffffff",
+            border: "none",
+            borderRadius: 999,
+            fontWeight: 700,
             fontSize: "0.9rem",
             whiteSpace: "nowrap",
-            transition: "all 0.15s ease"
+            boxShadow: "0 8px 20px rgba(10, 61, 98, 0.25)",
+            transition: "background 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease"
           }}
         >
           Browse all
           <ArrowIcon />
         </Link>
+
+        <style>{`
+          .bl-featured-browse-all:hover {
+            background: #1883ff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(24, 131, 255, 0.3) !important;
+          }
+        `}</style>
       </div>
 
       {/* Grid — reuses the same 3-column class as the listings page */}

@@ -4,10 +4,9 @@ import { signListingMediaUrls, signListingsMediaUrls } from "@/lib/media";
 import { prisma } from "@/lib/prisma";
 
 const listingInclude: any = {
-  user: { select: { id: true, name: true, email: true, role: true } },
+  user: { select: { id: true, name: true, role: true } },
   media: { orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }, { createdAt: "asc" }] },
   favorites: true,
-  conversations: true,
   statusHistory: { orderBy: { changedAt: "desc" } },
 };
 

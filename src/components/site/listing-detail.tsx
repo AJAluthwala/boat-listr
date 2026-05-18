@@ -6,6 +6,8 @@ import { useParams } from "next/navigation";
 import { useAuth } from "@/components/auth/auth-context";
 import { useAuthModal } from "@/components/auth/auth-modal-context";
 import { useFavorites } from "@/components/listings/favorites-context";
+import ContactSellerModal from "@/components/listings/contact-seller-modal";
+import { BoatCard } from "@/components/listings/boat-card";
 import { HeartIcon } from "@/components/listings/icons";
 import type { Listing, ListingMedia } from "@/components/listings/types";
 
@@ -369,10 +371,16 @@ const MediaViewer = ({ media }: { media: ListingMedia[] }) => {
         <div
           style={{
             display: "flex",
-            gap: 8,
-            marginTop: 12,
+            gap: 10,
+            marginTop: 14,
+            padding: "10px 12px",
+            background: "#ffffff",
+            border: "1px solid #e1eef5",
+            borderRadius: 14,
+            boxShadow: "0 4px 12px rgba(10, 61, 98, 0.05)",
             overflowX: "auto",
-            paddingBottom: 2
+            // Center when few thumbs (no overflow); left-align when many
+            justifyContent: media.length <= 5 ? "center" : "flex-start"
           }}
         >
           {media.map((m, i) => {
@@ -383,18 +391,32 @@ const MediaViewer = ({ media }: { media: ListingMedia[] }) => {
                 key={m.url ?? i}
                 type="button"
                 onClick={() => setIndex(i)}
+                aria-label={`View media ${i + 1}`}
                 style={{
                   flexShrink: 0,
-                  width: 72,
-                  height: 54,
+                  width: 96,
+                  height: 72,
                   border: `2px solid ${selected ? "#1883ff" : "#e1eef5"}`,
                   borderRadius: 10,
                   overflow: "hidden",
                   padding: 0,
                   cursor: "pointer",
                   background: "#0a3d62",
-                  opacity: selected ? 1 : 0.7,
-                  transition: "all 0.18s ease"
+                  opacity: selected ? 1 : 0.72,
+                  transition: "all 0.18s ease",
+                  boxShadow: selected
+                    ? "0 0 0 3px rgba(24, 131, 255, 0.18)"
+                    : "none"
+                }}
+                onMouseEnter={(e) => {
+                  if (selected) return;
+                  e.currentTarget.style.opacity = "1";
+                  e.currentTarget.style.borderColor = "#b2dcf2";
+                }}
+                onMouseLeave={(e) => {
+                  if (selected) return;
+                  e.currentTarget.style.opacity = "0.72";
+                  e.currentTarget.style.borderColor = "#e1eef5";
                 }}
               >
                 {isVideo ? (
@@ -408,7 +430,7 @@ const MediaViewer = ({ media }: { media: ListingMedia[] }) => {
                       color: "#fff"
                     }}
                   >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="6 4 20 12 6 20" />
                     </svg>
                   </div>
@@ -615,7 +637,13 @@ const DescriptionSection = ({ listing }: { listing: ListingDetailDto }) => {
 // SELLER CARD
 // ============================================
 
-const SellerCard = ({ listing }: { listing: ListingDetailDto }) => {
+const SellerCard = ({
+  listing,
+  onContactClick
+}: {
+  listing: ListingDetailDto;
+  onContactClick: () => void;
+}) => {
   const seller = listing.user;
   const initial = (seller?.name ?? "U").trim().charAt(0).toUpperCase();
   return (
@@ -652,8 +680,9 @@ const SellerCard = ({ listing }: { listing: ListingDetailDto }) => {
       <div style={{ color: "#8ea3bb", fontSize: "0.82rem", marginBottom: "1.2rem" }}>
         Member of BoatListr
       </div>
-      <Link
-        href={`/messages?listingId=${listing.id}`}
+      <button
+        type="button"
+        onClick={onContactClick}
         style={{
           display: "inline-block",
           width: "100%",
@@ -665,6 +694,9 @@ const SellerCard = ({ listing }: { listing: ListingDetailDto }) => {
           borderRadius: 12,
           textAlign: "center",
           boxShadow: "0 8px 18px rgba(24, 131, 255, 0.28)",
+          border: "none",
+          cursor: "pointer",
+          fontFamily: "inherit",
           transition: "transform 0.15s ease, box-shadow 0.15s ease"
         }}
         onMouseEnter={(e) => {
@@ -677,7 +709,7 @@ const SellerCard = ({ listing }: { listing: ListingDetailDto }) => {
         }}
       >
         Contact Seller
-      </Link>
+      </button>
     </div>
   );
 };
@@ -846,6 +878,8 @@ export default function ListingDetail() {
   const listingId = params?.id;
   const [item, setItem] = useState<ListingDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const [contactOpen, setContactOpen] = useState(false);
+  const [related, setRelated] = useState<Listing[]>([]);
 
   const { isAuthenticated } = useAuth();
   const { open: openAuthModal } = useAuthModal();
@@ -875,6 +909,31 @@ export default function ListingDetail() {
 
   const media = useMemo(() => item?.media ?? [], [item]);
 
+  // Fetch related listings (same category, excluding current)
+  useEffect(() => {
+    if (!item?.category || !item.id) return;
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/listings?page=1&pageSize=6&category=${encodeURIComponent(item.category)}`,
+        );
+        if (!res.ok) return;
+        const data = (await res.json()) as { items?: Listing[] };
+        if (!active) return;
+        const filtered = (data.items ?? [])
+          .filter((l) => l.id !== item.id)
+          .slice(0, 3);
+        setRelated(filtered);
+      } catch {
+        /* ignore */
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [item?.id, item?.category]);
+
   if (loading) return <LoadingState />;
   if (!item) return <NotFoundState />;
 
@@ -887,6 +946,8 @@ export default function ListingDetail() {
     }
     void toggleFavorite(item);
   };
+
+  const handleContactClick = () => setContactOpen(true);
 
   return (
     <div style={{ display: "grid", gap: 18 }}>
@@ -933,10 +994,40 @@ export default function ListingDetail() {
             alignSelf: "start"
           }}
         >
-          <SellerCard listing={item} />
+          <SellerCard listing={item} onContactClick={handleContactClick} />
           <SafetyTipsCard />
         </aside>
       </div>
+
+      {related.length > 0 && (
+        <section style={{ display: "grid", gap: "1.25rem", marginTop: "1rem" }}>
+          <h2
+            style={{
+              margin: 0,
+              fontSize: "clamp(1.5rem, 3vw, 2rem)",
+              fontWeight: 800,
+              color: "#0a3d62",
+              letterSpacing: "-0.02em",
+              lineHeight: 1.2,
+            }}
+          >
+            Related Listings
+          </h2>
+          <div className="bl-listing-grid">
+            {related.map((listing) => (
+              <BoatCard key={listing.id} listing={listing} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <ContactSellerModal
+        open={contactOpen}
+        onClose={() => setContactOpen(false)}
+        listingId={item.id}
+        boatTitle={item.title}
+        boatLocation={item.location}
+      />
 
       <style>{`
         @media (max-width: 900px) {

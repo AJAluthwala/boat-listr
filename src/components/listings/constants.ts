@@ -1,3 +1,26 @@
+export const BOAT_BRANDS = [
+  "Yamaha",
+  "Sea Ray",
+  "Bayliner",
+  "Tracker",
+  "Lund",
+  "Starcraft",
+  "Boston Whaler",
+  "Ranger",
+  "Nitro",
+  "Skeeter",
+  "Crestliner",
+  "Alumacraft",
+  "Other"
+];
+
+export const LISTING_STATUS_OPTIONS = [
+  { value: "ACTIVE", label: "Active" },
+  { value: "SOLD", label: "Sold" },
+  { value: "PENDING", label: "Pending review" },
+  { value: "ARCHIVED", label: "Archived" }
+] as const;
+
 export const FILTER_DATA = {
   categories: [
     "Aluminum Fishing Boat",

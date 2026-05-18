@@ -11,7 +11,7 @@ export default function Page() {
       </Card>
       <div className="bl-section-grid">
         <Card><strong>1.2k</strong><p>Monthly views</p></Card>
-        <Card><strong>84</strong><p>Buyer conversations</p></Card>
+        <Card><strong>84</strong><p>Buyer inquiries</p></Card>
         <Card><strong>27%</strong><p>Conversion lift</p></Card>
       </div>
     </main>

@@ -205,7 +205,7 @@ export default function SiteHero() {
             marginBottom: "1rem"
           }}
         >
-          Boat Marketplace
+          BoatListr
         </span>
         <h1
           style={{

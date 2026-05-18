@@ -3,26 +3,10 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ImageUploader from "./image-uploader";
-import { FILTER_DATA } from "./constants";
+import { BOAT_BRANDS, FILTER_DATA } from "./constants";
 import { useAuth } from "@/components/auth/auth-context";
 import { useAuthModal } from "@/components/auth/auth-modal-context";
 import { PLANS, type PlanKey } from "@/lib/plans";
-
-const BOAT_BRANDS = [
-  "Yamaha",
-  "Sea Ray",
-  "Bayliner",
-  "Tracker",
-  "Lund",
-  "Starcraft",
-  "Boston Whaler",
-  "Ranger",
-  "Nitro",
-  "Skeeter",
-  "Crestliner",
-  "Alumacraft",
-  "Other"
-];
 
 type UploadedFile = {
   id: string;
@@ -678,7 +662,7 @@ const PlanBanner = ({
         gap: "1rem",
         flexWrap: "wrap",
         background: isPremium
-          ? "linear-gradient(135deg, #0a3d62 0%, #1883ff 100%)"
+          ? "repeating-linear-gradient(135deg, rgba(255,255,255,0.04) 0, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 28px), linear-gradient(135deg, #051d35 0%, #0a3d62 40%, #1883ff 100%)"
           : "#ffffff",
         border: isPremium ? "1px solid #0a3d62" : "1px solid #e1eef5",
         color: isPremium ? "#ffffff" : "#0a3d62"

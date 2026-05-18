@@ -6,22 +6,6 @@ import { PLANS, type PlanKey } from "@/lib/plans";
 import { useAuth } from "@/components/auth/auth-context";
 import { useAuthModal } from "@/components/auth/auth-modal-context";
 
-const CheckIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#16a34a"
-    strokeWidth="3"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
-
 type PricingCardsProps = {
   showHeader?: boolean;
   headerEyebrow?: string;
@@ -211,6 +195,22 @@ type PlanCardProps = {
   loading: boolean;
 };
 
+const CheckIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#16a34a"
+    strokeWidth="3"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
+
 function PlanCard({
   plan,
   highlighted,
@@ -390,8 +390,8 @@ function PlanCard({
         {loading ? "Redirecting…" : ctaLabel}
       </button>
 
-      {/* Subtle plan duration line (mostly relevant for Free's 7-day note) */}
-      {!isPremium && (
+      {/* Subtle plan duration line */}
+      {!isPremium && plan.durationLabel && (
         <p
           style={{
             margin: "0.85rem 0 0",

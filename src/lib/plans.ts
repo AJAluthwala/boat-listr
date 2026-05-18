@@ -9,7 +9,7 @@ export type Plan = {
 	maxPhotos: number;
 	maxVideos: number;
 	videoDurationSec: number;
-	durationLabel: string;
+	durationLabel?: string;
 	features: string[];
 };
 
@@ -23,12 +23,12 @@ export const PLANS: Record<PlanKey, Plan> = {
 		maxPhotos: 10,
 		maxVideos: 1,
 		videoDurationSec: 30,
-		durationLabel: "7-day listing",
 		features: [
 			"Up to 10 photos",
 			"1 video (30 seconds)",
 			"Basic listing features",
 			"Mobile-friendly display",
+			"7 day listing duration",
 		],
 	},
 	premium: {

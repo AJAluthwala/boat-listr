@@ -18,9 +18,8 @@ const CheckIcon = () => (
 
 export default function Page() {
   return (
-    <main
-      className="bl-container"
-      style={{ paddingTop: "4rem", paddingBottom: "4rem" }}
+    <div
+      style={{ paddingTop: "1rem", paddingBottom: "2rem" }}
     >
       <div
         style={{
@@ -116,6 +115,6 @@ export default function Page() {
           </Link>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

@@ -5,10 +5,9 @@ import { canManageResource } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
 const include: any = {
-  user: { select: { id: true, name: true, email: true, role: true } },
+  user: { select: { id: true, name: true, role: true } },
   media: { orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }, { createdAt: "asc" }] },
   favorites: true,
-  conversations: true,
   statusHistory: { orderBy: { changedAt: "desc" } },
 };
 
